@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <!-- ── META TAGS ─────────────────────────────────────── -->
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Cricket Stats Analyzer — A beginner-friendly project demonstrating how SQL data powers real web applications. Built with HTML, CSS, JavaScript and Supabase."
+    />
+    <title>🏏 Cricket Stats Analyzer — DSCH SQL Workshop</title>
+
+    <!-- ── GOOGLE FONTS ──────────────────────────────────── -->
+    <!-- Inter: Clean body text | Outfit: Bold display headings -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@600;700;800&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- ── OUR STYLESHEET ────────────────────────────────── -->
+    <link rel="stylesheet" href="style.css" />
+
+    <!-- ── SUPABASE JS CDN ───────────────────────────────── -->
+    <!--
+      This loads the Supabase JavaScript library from a CDN (Content Delivery Network).
+      A CDN hosts popular libraries so anyone can use them without npm/yarn.
+      After loading, the global `supabase` object is available in our scripts.
+    -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <!-- ── CHART.JS CDN ──────────────────────────────────── -->
+    <!-- Chart.js is a popular library for creating beautiful charts -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
+  </head>
+
+  <body>
+    <!-- ═══════════════════════════════════════════════════════
+         🧭 NAVIGATION BAR
+         A sticky header that stays at the top as you scroll
+         ═══════════════════════════════════════════════════════ -->
+    <nav class="navbar" id="navbar">
+      <a href="#" class="navbar-brand">
+        <img src="assets/dsch-logo.png" alt="DSCH Logo" class="navbar-logo" />
+        <div>
+          <div class="navbar-title">Cricket Stats Analyzer</div>
+          <div class="navbar-subtitle">Data Science Club HIT</div>
+        </div>
+      </a>
+      <div class="navbar-badge">
+        <span class="pulse-dot"></span>
+        Live from Supabase
+      </div>
+    </nav>
+
+    <!-- ═══════════════════════════════════════════════════════
+         🖼️ DSCH BANNER
+         The official Data Science Club HIT banner image
+         ═══════════════════════════════════════════════════════ -->
+    <div class="banner-section">
+      <img src="assets/dsch-banner.png" alt="Data Science Club HIT — Haldia Institute of Technology" class="banner-image" />
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════════
+         🏠 MAIN CONTENT
+         ═══════════════════════════════════════════════════════ -->
+    <main class="container">
+      <!-- ── 🦸 Hero Section ────────────────────────────── -->
+      <section class="hero" id="hero">
+        <img src="assets/dsch-logo.png" alt="DSCH Logo" class="hero-logo" />
+        <h1>
+          Analyze <span class="highlight">Cricket Stats</span><br />
+          Powered by SQL
+        </h1>
+        <p class="hero-description">
+          A hands-on demonstration by <strong>Data Science Club HIT</strong> showing
+          how <strong>SQL databases</strong> power real web applications. Fetching
+          live player data from <strong>Supabase PostgreSQL</strong>.
+        </p>
+        <div class="hero-tags">
+          <span class="tag tag--orange">🗄️ PostgreSQL</span>
+          <span class="tag tag--amber">⚡ Supabase</span>
+          <span class="tag tag--white">🌐 Vanilla JS</span>
+        </div>
+      </section>
+
+      <!-- ── 📊 Stats Overview Cards ────────────────────── -->
+      <!--
+        These 4 cards show key statistics:
+        1. Total Players  — COUNT(*) equivalent
+        2. Top Scorer     — MAX(runs) equivalent
+        3. Average Runs   — AVG(runs) equivalent
+        4. Total Teams    — COUNT(DISTINCT team) equivalent
+
+        They are populated dynamically by script.js
+      -->
+      <section class="stats-grid" id="stats-grid">
+        <!-- Card 1: Total Players -->
+        <div class="stat-card stat-card--orange">
+          <div class="stat-card-header">
+            <span class="stat-card-icon">👥</span>
+            <span class="stat-card-label">Total Players</span>
+          </div>
+          <div class="stat-card-value" id="stat-total-players">—</div>
+          <div class="stat-card-detail" id="stat-total-detail">Loading...</div>
+          <button class="btn-show-sql" onclick="showSQL('count')">{ } Show SQL</button>
+        </div>
+
+        <!-- Card 2: Top Scorer -->
+        <div class="stat-card stat-card--gold">
+          <div class="stat-card-header">
+            <span class="stat-card-icon">🏆</span>
+            <span class="stat-card-label">Top Scorer</span>
+          </div>
+          <div class="stat-card-value" id="stat-top-scorer">—</div>
+          <div class="stat-card-detail" id="stat-top-detail">Loading...</div>
+          <button class="btn-show-sql" onclick="showSQL('topScorer')">{ } Show SQL</button>
+        </div>
+
+        <!-- Card 3: Average Runs -->
+        <div class="stat-card stat-card--white">
+          <div class="stat-card-header">
+            <span class="stat-card-icon">📊</span>
+            <span class="stat-card-label">Average Runs</span>
+          </div>
+          <div class="stat-card-value" id="stat-avg-runs">—</div>
+          <div class="stat-card-detail" id="stat-avg-detail">Loading...</div>
+          <button class="btn-show-sql" onclick="showSQL('average')">{ } Show SQL</button>
+        </div>
+
+        <!-- Card 4: Teams -->
+        <div class="stat-card stat-card--amber">
+          <div class="stat-card-header">
+            <span class="stat-card-icon">🏟️</span>
+            <span class="stat-card-label">Teams</span>
+          </div>
+          <div class="stat-card-value" id="stat-teams">—</div>
+          <div class="stat-card-detail" id="stat-teams-detail">Loading...</div>
+          <button class="btn-show-sql" onclick="showSQL('teams')">{ } Show SQL</button>
+        </div>
+      </section>
+
+      <!-- ── 📈 Team Analytics Chart ──────────────────────── -->
+      <!--
+        This section uses Chart.js to visualize team-wise run data.
+        The chart is created dynamically by script.js after data loads.
+        SQL equivalent: SELECT team, SUM(runs) FROM players GROUP BY team;
+      -->
+      <section id="chart-section" style="margin-top: 2rem">
+        <div class="section-header">
+          <h2 class="section-title">
+            📈 Team Runs Visualization
+          </h2>
+          <button class="btn-show-sql" onclick="showSQL('teamChart')">{ } Show SQL</button>
+        </div>
+        <div class="chart-container" id="chart-container">
+          <canvas id="team-chart"></canvas>
+        </div>
+      </section>
+
+      <!-- ── 📋 Players Table Section ───────────────────── -->
+      <section id="players-section">
+        <div class="section-header">
+          <h2 class="section-title">
+            📋 Player Rankings
+            <span class="section-count" id="player-count">0</span>
+            <button class="btn-show-sql" onclick="showSQL('selectAll')" style="margin-left: 8px">{ } Show SQL</button>
+          </h2>
+          <div class="search-box">
+            <span class="search-icon">🔍</span>
+            <input
+              type="text"
+              id="search-input"
+              placeholder="Search players or teams..."
+              aria-label="Search players"
+            />
+          </div>
+        </div>
+
+        <!-- The table container — content is injected by JS -->
+        <div class="table-container" id="table-container">
+          <!-- Loading state shown initially -->
+          <div class="loading" id="loading-state">
+            <div class="loading-spinner"></div>
+            <div class="loading-text">
+              Fetching players from Supabase...
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ── 🏟️ Team-Wise Stats Section ─────────────────── -->
+      <section id="team-section" style="margin-top: 3rem">
+        <div class="section-header">
+          <h2 class="section-title">
+            🏟️ Team-Wise Analysis
+            <button class="btn-show-sql" onclick="showSQL('groupBy')" style="margin-left: 8px">{ } Show SQL</button>
+          </h2>
+        </div>
+        <div class="team-grid" id="team-grid">
+          <!-- Team cards injected by JS -->
+        </div>
+      </section>
+    </main>
+
+    <!-- ── 🦶 Footer ────────────────────────────────────── -->
+    <footer class="footer">
+      <p>
+        Built with 🧡 by
+        <a href="#">Data Science Club HIT</a> •
+        SQL Workshop •
+        Data powered by <a href="https://supabase.com" target="_blank" rel="noopener">Supabase</a>
+      </p>
+    </footer>
+
+    <!-- ═══════════════════════════════════════════════════════
+         🔍 SQL QUERY MODAL
+         Displays the SQL equivalent of each operation.
+         Opened by "Show SQL" buttons, closed by clicking overlay or ✕.
+         ═══════════════════════════════════════════════════════ -->
+    <div class="sql-modal-overlay" id="sql-modal-overlay" onclick="closeSQL()">
+      <div class="sql-modal" onclick="event.stopPropagation()">
+        <div class="sql-modal-header">
+          <span class="sql-modal-title">🗄️ SQL Query</span>
+          <button class="sql-modal-close" onclick="closeSQL()" aria-label="Close">✕</button>
+        </div>
+        <div class="sql-modal-description" id="sql-modal-description"></div>
+        <pre class="sql-modal-code"><code id="sql-modal-code"></code></pre>
+        <div class="sql-modal-footer">
+          <span class="sql-modal-hint">💡 This is the SQL query that powers this stat</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════════
+         📜 SCRIPTS — Order matters!
+         1. supabase-config.js → creates the database client
+         2. fetch-functions.js → query & calculation functions
+         3. script.js          → main app logic (uses both above)
+         ═══════════════════════════════════════════════════════ -->
+    <script src="supabase-config.js"></script>
+    <script src="fetch-functions.js"></script>
+    <script src="script.js"></script>
+  </body>
+</html>
